@@ -4,9 +4,9 @@ using System.Text;
 
 namespace EkzKuranov
 {
-    internal class DijkstraAlg
+    public class DijkstraAlg
     {
-        private static double[] Dijkstra(double[,] a, int v0)
+        public static double[] Dijkstra(double[,] a, int v0)
         {
             int n = a.GetLength(0);
             double[] dist = new double[n];
