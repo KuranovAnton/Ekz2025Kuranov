@@ -1,1 +1,0 @@
-# Ekz2025Kuranov
