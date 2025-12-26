@@ -17,7 +17,7 @@ namespace EkzKuranov
                     matrix[i, j] = (i == j) ? 0 : Double.MaxValue;
 
             Console.WriteLine("Введите связи между точками в формате: точка1 точка2 расстояние");
-            Console.WriteLine("Для завершения ввода связей введите '0 0 0' (Три нуля)");
+            Console.WriteLine("Для завершения ввода связей введите '0 0 0'");
 
             while (true)
             {
@@ -36,6 +36,72 @@ namespace EkzKuranov
             Console.WriteLine("Введите расход топлива на 100 км:");
             double fuelPer100km = double.Parse(Console.ReadLine());
 
+            while (true)
+            {
+                Console.WriteLine("Введите номера точек для поиска пути (или 0 0 для выхода):");
+                string[] input = Console.ReadLine().Split();
+                int startPoint = int.Parse(input[0]);
+                int endPoint = int.Parse(input[1]);
+
+                if (startPoint == 0 || endPoint == 0)
+                    break;
+
+                var dist = DijkstraAlg.Dijkstra(matrix, startPoint - 1);
+                List<int> path = ReconstructPath(matrix, dist, startPoint - 1, endPoint - 1);
+
+                if (path.Count == 0)
+                {
+                    Console.WriteLine("Путь не найден.");
+                    continue;
+                }
+
+                Console.WriteLine("Кратчайший путь:");
+                foreach (int node in path)
+                {
+                    Console.Write($"{node + 1} ");
+                }
+                Console.WriteLine();
+
+                double totalDistance = 0;
+                for (int i = 0; i < path.Count - 1; i++)
+                {
+                    totalDistance += matrix[path[i], path[i + 1]];
+                }
+
+                double totalFuel = (totalDistance / 100.0) * fuelPer100km;
+                Console.WriteLine($"Расстояние: {totalDistance} км");
+                Console.WriteLine($"Расход топлива: {totalFuel} литров");
+            }
+
+            static List<int> ReconstructPath(double[,] a, double[] dist, int start, int end)
+            {
+                List<int> path = new List<int>();
+                int current = end;
+                path.Add(current);
+                while (current != start)
+                {
+                    bool foundPrev = false;
+                    for (int neighbor = 0; neighbor < a.GetLength(0); neighbor++)
+                    {
+                        if (a[neighbor, current] != Double.MaxValue && neighbor != current)
+                        {
+                            if (dist[neighbor] != Double.MaxValue && Math.Abs(dist[neighbor] + a[neighbor, current] - dist[current]) < 1e-9)
+                            {
+                                current = neighbor;
+                                path.Add(current);
+                                foundPrev = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!foundPrev)
+                    {
+                        return new List<int>();
+                    }
+                }
+                path.Reverse();
+                return path;
+            }
         }
     }
 }
