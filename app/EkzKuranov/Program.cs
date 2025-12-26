@@ -7,8 +7,15 @@ namespace EkzKuranov
     {
         static void Main()
         {
-            Console.WriteLine("Введите количество точек на карте:");
-            int n = int.Parse(Console.ReadLine());
+            int n = 0;
+            while (true)
+            {
+                Console.WriteLine("Введите количество точек на карте (положительное число):");
+                string inputN = Console.ReadLine();
+                if (int.TryParse(inputN, out n) && n > 0)
+                    break;
+                Console.WriteLine("Некорректный ввод. Попробуйте ещё раз.");
+            }
 
             double[,] matrix = new double[n, n];
 
@@ -21,30 +28,84 @@ namespace EkzKuranov
 
             while (true)
             {
-                string[] input = Console.ReadLine().Split();
-                int from = int.Parse(input[0]);
-                int to = int.Parse(input[1]);
-                double distance = double.Parse(input[2]);
+                Console.Write("Введите связь: ");
+                string line = Console.ReadLine();
+                string[] input = line.Split();
 
-                if (from == 0 && to == 0 && distance == 0)
+                if (input.Length != 3)
+                {
+                    Console.WriteLine("Некорректный формат. Попробуйте ещё раз.");
+                    continue;
+                }
+
+                bool fromParsed = int.TryParse(input[0], out int from);
+                bool toParsed = int.TryParse(input[1], out int to);
+                bool distParsed = double.TryParse(input[2], out double distance);
+
+                if (!fromParsed || !toParsed || !distParsed)
+                {
+                    Console.WriteLine("Введены некорректные числа. Попробуйте ещё раз.");
+                    continue;
+                }
+
+                if (from == 0 && to == 0 && Math.Abs(distance) < 1e-9)
                     break;
+
+                if (from < 1 || to < 1 || from > n || to > n)
+                {
+                    Console.WriteLine($"Номера точек должны быть в диапазоне от 1 до {n}. Попробуйте ещё раз.");
+                    continue;
+                }
+
+                if (distance < 0)
+                {
+                    Console.WriteLine("Расстояние не может быть отрицательным. Попробуйте ещё раз.");
+                    continue;
+                }
 
                 matrix[from - 1, to - 1] = distance;
                 matrix[to - 1, from - 1] = distance;
             }
 
-            Console.WriteLine("Введите расход топлива на 100 км:");
-            double fuelPer100km = double.Parse(Console.ReadLine());
+            double fuelPer100km = 0;
+            while (true)
+            {
+                Console.WriteLine("Введите расход топлива на 100 км:");
+                string fuelInput = Console.ReadLine();
+                if (double.TryParse(fuelInput, out fuelPer100km) && fuelPer100km >= 0)
+                    break;
+                Console.WriteLine("Некорректный ввод. Попробуйте ещё раз.");
+            }
 
             while (true)
             {
-                Console.WriteLine("Введите номера точек для поиска пути (или 0 0 для выхода):");
-                string[] input = Console.ReadLine().Split();
-                int startPoint = int.Parse(input[0]);
-                int endPoint = int.Parse(input[1]);
+                Console.Write("Введите номера точек для поиска пути (или 0 0 для выхода): ");
+                string line = Console.ReadLine();
+                string[] input = line.Split();
+
+                if (input.Length != 2)
+                {
+                    Console.WriteLine("Некорректный формат. Попробуйте ещё раз.");
+                    continue;
+                }
+
+                bool startParsed = int.TryParse(input[0], out int startPoint);
+                bool endParsed = int.TryParse(input[1], out int endPoint);
+
+                if (!startParsed || !endParsed)
+                {
+                    Console.WriteLine("Введены некорректные числа. Попробуйте ещё раз.");
+                    continue;
+                }
 
                 if (startPoint == 0 || endPoint == 0)
                     break;
+
+                if (startPoint < 1 || startPoint > n || endPoint < 1 || endPoint > n)
+                {
+                    Console.WriteLine($"Номера точек должны быть в диапазоне от 1 до {n}. Попробуйте ещё раз.");
+                    continue;
+                }
 
                 var dist = DijkstraAlg.Dijkstra(matrix, startPoint - 1);
                 List<int> path = ReconstructPath(matrix, dist, startPoint - 1, endPoint - 1);
