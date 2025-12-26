@@ -1,2 +1,1 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿//Приложение по рассчету кратчайшего пути и расхода топлива по точкам на карте города Кальчугино
