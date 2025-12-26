@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../EkzKuranov.Tests/EkzKuranov.Tests.csproj" Id="d8beae37-ceb3-40bd-9692-cde3129857b2" />
   <Project Path="EkzKuranov.csproj" />
 </Solution>
